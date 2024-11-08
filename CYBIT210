@@ -1,0 +1,43 @@
+#system_info
+
+output_file="system_info.txt"
+
+{
+  echo "System Information Report"
+  echo "-------------------------"
+  echo 
+
+  echo "Hostname: $(hostname)"
+  echo
+
+  echo "Operating System: $(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')"
+  echo
+
+  echo "Uptime: $(uptime -p)"
+  echo
+
+  echo "Kernel Version: $(uname -r)"
+  echo
+
+  echo "CPU Information:"
+  lscpu | grep -E '^Model name|^CPU(s):|^Architecture|^Thread|^Core'
+  echo
+
+  echo "Memory Information:"
+  free -h | awk 'NR==1 || NR==2 {print}'
+  echo
+
+  echo "Network Interface Information:"
+  ip -br addr show
+  echo
+
+  echo "Filesystem Utilization:"
+  df -hT
+  echo
+
+  echo "Last 5 Log Lines Containing 'error' (case-insensitive):"
+  journalctl --no-pager | grep -i 'error' | tail -5
+echo
+} > "$output_file"
+
+echo "System information has been saved to $output_file"
